@@ -32,7 +32,8 @@
         ({ config, pkgs, lib, ... }: {
           options.archibaldOS = {
             enableRTAudio = lib.mkEnableOption "Enable real-time audio optimizations" // { default = true; };
-           Dee enableSteamUI = lib.mkEnableOption "Enable Steam Game Mode" // { default = false; };
+            enableSteamUI = lib.mkEnableOption "Enable Steam Game Mode" // { default = false; };
+            enableHeadless = lib.mkEnableOption "Enable headless mode (no desktop, max RT optimization)" // { default = false; };
           };
 
           config = {
@@ -46,7 +47,7 @@
 
             hardware.graphics.enable = true;
             hardware.graphics.extraPackages = with pkgs; [
-              mesa vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver
+              mesa vaapiVdpau libvdpau-va-gl amdvlk
             ];
 
             isoImage.squashfsCompression = "gzip -Xcompression-level 1";
@@ -60,6 +61,7 @@
               wallpaperPaths = [ ./modules/assets/demod-wallpaper.jpg ];
             };
 
+            # Live user
             users.users.nixos = {
               initialHashedPassword = lib.mkForce null;
               home = "/home/nixos";
@@ -68,6 +70,7 @@
               shell = lib.mkForce pkgs.bashInteractive;
             };
 
+            # Hide audio-user in live
             users.users.audio-user = lib.mkForce {
               isSystemUser = true;
               group = "audio-user";
@@ -75,7 +78,8 @@
             };
             users.groups.audio-user = {};
 
-            services.displayManager.autoLogin.enable = lib.mkDefault (!config.archibaldOS.enableSteamUI);
+            # Auto-login (Plasma unless Steam enabled or headless)
+            services.displayManager.autoLogin.enable = lib.mkDefault (!config.archibaldOS.enableSteamUI && !config.archibaldOS.enableHeadless);
             services.displayManager.autoLogin.user = "nixos";
 
             services.displayManager.sddm.settings = {
@@ -89,6 +93,7 @@
               '';
             };
 
+            # === Steam Deck Hardware (Always On) ===
             jovian.devices.steamdeck = {
               enable = true;
               enableSoundSupport = true;
@@ -97,6 +102,7 @@
 
             boot.kernelPackages = pkgs.linuxPackages_jovian;
 
+            # === Optional Steam UI ===
             jovian.steam = lib.mkIf config.archibaldOS.enableSteamUI {
               enable = true;
               autoStart = true;
@@ -116,6 +122,9 @@
               enable = true;
               user = "deck";
             };
+
+            # Battery optimization with TLP (enabled with RT audio)
+            services.tlp.enable = lib.mkIf config.archibaldOS.enableRTAudio true;
           };
         })
       ];
