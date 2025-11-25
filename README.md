@@ -4,19 +4,19 @@
 
 ---
 
-## **Overview**
+## Overview
 
-**ArchibaldOS Steam Deck Edition** is a **specialized, minimal NixOS distribution** engineered for **real-time audio production** on the **Valve Steam Deck** (LCD and OLED models). It transforms the handheld gaming device into a **professional-grade, ultra-low-latency audio workstation** while preserving full gaming capability through **optional Steam Game Mode**.
+**ArchibaldOS Steam Deck Edition** is a **specialized, minimal NixOS distribution** engineered for **real-time audio production** on the **Valve Steam Deck** (LCD and OLED models). It transforms the handheld into a **professional-grade, ultra-low-latency audio workstation** while preserving full gaming capability through **optional Steam Game Mode**.
 
-Built entirely with **Nix flakes** for **declarative, reproducible, and version-controlled system configuration**, ArchibaldOS follows a **"minimal oligarchy"** design philosophy: a curated, elite set of components optimized for **zero-glitch, high-performance audio**.
+Built on **Nix flakes** for **declarative, reproducible, and version-controlled configuration**, it follows a **"minimal oligarchy"** philosophy: one elite RT kernel, one low-latency audio stack, one purpose — **zero-glitch audio**.
 
 ---
 
-## **Key Features**
+## Key Features
 
 | Category | Feature |
 |--------|---------|
-| **Real-Time Audio** | 32-sample quantum @ 48kHz, RT kernel, `threadirqs`, `isolcpus=1-3`, RTIRQ, DAS watchdog |
+| **Real-Time Audio** | 32-sample PipeWire @ 48kHz, RT kernel, `threadirqs`, `isolcpus=1-3`, RTIRQ, DAS watchdog |
 | **Audio Stack** | PipeWire (ALSA/JACK/Pulse), `pw-jack` drop-in, 32-bit float, low buffer |
 | **Pro Audio Tools** | 30+ curated apps: Audacity, Zrythm, Carla, SuperCollider, CSound, Surge, Helm, Guitarix, Calf, Faust, Dragonfly Reverb |
 | **Steam Deck Hardware** | Full APU (Van Gogh/Sephiroth), fan curves, TDP control (`ryzenadj`), touchscreen, controls, speakers, USB audio |
@@ -28,9 +28,9 @@ Built entirely with **Nix flakes** for **declarative, reproducible, and version-
 
 ---
 
-## **Use Cases**
+## Use Cases
 
-### **1. Portable Music Production & Live Performance**
+### 1. **Portable Music Production & Live Performance**
 - **Scenario**: Electronic musician performing at a venue or recording in the field.
 - **Workflow**:
   1. Boot from USB live ISO
@@ -42,7 +42,7 @@ Built entirely with **Nix flakes** for **declarative, reproducible, and version-
   - No bloat — system stays responsive
   - Test setup before installing
 
-### **2. Game Audio Design & Soundtrack Prototyping**
+### 2. **Game Audio Design & Soundtrack Prototyping**
 - **Scenario**: Indie developer composing adaptive music for a game.
 - **Workflow**:
   1. Enable `enableSteamUI = true`
@@ -55,7 +55,7 @@ Built entirely with **Nix flakes** for **declarative, reproducible, and version-
   - PipeWire routes game audio for real-time processing
   - TDP control extends battery life
 
-### **3. Audio Education & Workshops**
+### 3. **Audio Education & Workshops**
 - **Scenario**: Teaching DAW basics, DSP, or generative audio.
 - **Workflow**:
   1. Distribute **live USB ISOs**
@@ -66,7 +66,7 @@ Built entirely with **Nix flakes** for **declarative, reproducible, and version-
   - No installation required
   - Branded experience for professional workshops
 
-### **4. Embedded & Headless Audio Systems**
+### 4. **Embedded & Headless Audio Systems**
 - **Scenario**: Interactive art installation or kiosk with generative sound.
 - **Workflow**:
   1. Flash `deck-image` to internal NVMe
@@ -80,7 +80,7 @@ Built entirely with **Nix flakes** for **declarative, reproducible, and version-
 
 ---
 
-## **System Requirements**
+## System Requirements
 
 | Component | Minimum | Recommended |
 |---------|---------|-------------|
@@ -101,7 +101,7 @@ Built entirely with **Nix flakes** for **declarative, reproducible, and version-
 
 ---
 
-## **Installation Guide**
+## Installation Guide
 
 ### **Option 1: Live USB (Recommended)**
 ```bash
@@ -135,7 +135,7 @@ nix build .#deck-image
 
 ---
 
-## **Dual-Boot with SteamOS (Advanced)**
+## Dual-Boot with SteamOS (Advanced)
 
 **ArchibaldOS + SteamOS dual-boot** allows you to keep Valve's official **SteamOS** (for seamless Game Mode and updates) alongside **ArchibaldOS** (for ultra-low-latency RT audio production). Both OSes share the **internal NVMe** and **microSD card** for games/music libraries, with **systemd-boot** handling selection at startup.
 
@@ -275,7 +275,7 @@ sudo umount /mnt/sd
 
 ---
 
-## **Virtualization: ArchibaldVM (IoMMU Passthrough)**
+## Virtualization: ArchibaldVM (IoMMU Passthrough)
 
 > **Recommended**: For **maximum performance and isolation**, deploy **ArchibaldOS as a VM** using **QEMU/KVM with IoMMU passthrough** on a host running **ArchibaldVM** (a minimal NixOS VM host derived from ArchibaldOS).
 
@@ -303,7 +303,7 @@ boot.kernelParams = [ "amd_iommu=on" ];
 
 ---
 
-## **Post-Install Configuration**
+## Post-Install Configuration
 
 Edit `/etc/nixos/flake.nix` or your local config:
 
@@ -311,6 +311,7 @@ Edit `/etc/nixos/flake.nix` or your local config:
 archibaldOS = {
   enableRTAudio = true;   # Default: full RT stack
   enableSteamUI = false;  # Set to true for Game Mode
+  enableHeadless = false; # Set to true for max RT (no desktop)
 };
 ```
 
@@ -321,7 +322,7 @@ sudo nixos-rebuild switch
 
 ---
 
-## **Usage & Commands**
+## Usage & Commands
 
 | Task | Command |
 |------|---------|
@@ -335,7 +336,7 @@ sudo nixos-rebuild switch
 
 ---
 
-## **Directory Structure**
+## Directory Structure
 
 ```
 archibaldos-deck/
@@ -356,7 +357,7 @@ archibaldos-deck/
 
 ---
 
-## **Troubleshooting**
+## Troubleshooting
 
 | Issue | Solution |
 |------|----------|
@@ -369,7 +370,7 @@ archibaldos-deck/
 
 ---
 
-## **Contributing**
+## Contributing
 
 1. Fork the repository
 2. Make changes (focus: RT audio, Deck hardware, minimalism)
@@ -378,7 +379,7 @@ archibaldos-deck/
 
 ---
 
-## **License**
+## License
 
 ```
 MIT License
@@ -389,7 +390,7 @@ Contact [@DeMoDLLC](https://x.com/DeMoDLLC) for commercial licensing.
 
 ---
 
-## **Credits & Acknowledgments**
+## Credits & Acknowledgments
 
 - **NixOS** – Declarative Linux
 - **Musnix** – Real-time audio on Nix
