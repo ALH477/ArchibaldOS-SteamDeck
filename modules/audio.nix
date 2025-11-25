@@ -1,3 +1,4 @@
+# modules/audio.nix
 { config, pkgs, lib, ... }:
 
 lib.mkIf config.archibaldOS.enableRTAudio (let
@@ -9,7 +10,7 @@ lib.mkIf config.archibaldOS.enableRTAudio (let
   ];
 in {
   musnix.enable = true;
-  musnix.kernel.realtime = true;
+  musnix.kernel.realtime = lib.mkDefault true;  # Fallback if conflicts with Jovian
   musnix.kernel.packages = config.boot.kernelPackages;
   musnix.alsaSeq.enable = true;
   musnix.rtirq.enable = true;
@@ -43,7 +44,8 @@ in {
 
   boot.kernelParams = [
     "threadirqs" "isolcpus=1-3" "nohz_full=1-3"
-    "intel_idle.max_cstate=1" "processor.max_cstate=1"
+    "processor.max_cstate=1" "rcu_nocbs=1-3" "irqaffinity=0"
+    "amd_pstate=active"
   ];
 
   boot.kernel.sysctl = {
