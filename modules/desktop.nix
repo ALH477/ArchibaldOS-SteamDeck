@@ -1,4 +1,6 @@
+# modules/desktop.nix
 { config, pkgs, ... }:
+lib.mkIf (!config.archibaldOS.enableHeadless) (
 let
   basicPackages = with pkgs; [
     vim kitty wireplumber cava playerctl
@@ -17,3 +19,4 @@ in {
 
   environment.systemPackages = basicPackages;
 }
+)
